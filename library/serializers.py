@@ -6,7 +6,14 @@ class AuthorSerializer(serializers.ModelSerializer):
     books = serializers.PrimaryKeyRelatedField(many=True, read_only=True, source='book_set')
     class Meta:
         model = Author
-        fields = ['id', 'name', 'biography', 'books']
+        fields = ['id','first_name','last_name', 'username', 'email','password', 'biography', 'books']
+    
+    def create(self, request):
+        password = request.pop('password')
+        user = Author(**request)
+        user.set_password(password)
+        user.save()
+        return user
 
 
 class BookSerializer(serializers.ModelSerializer):
