@@ -6,13 +6,19 @@ class AuthorSerializer(serializers.ModelSerializer):
     books = serializers.PrimaryKeyRelatedField(many=True, read_only=True, source='book_set')
     class Meta:
         model = Author
-        fields = ['id','first_name','last_name', 'username', 'email','password', 'biography', 'books']
+        fields = ['id' ,'first_name' ,'last_name' ,'username', 'email', 'password', 'biography' ,'books']
+
+        extra_kwargs = {
+            'password': {'write_only': True},
+            'email': {'write_only': True},
+        }
     
-    def create(self, request):
-        password = request.pop('password')
-        user = Author(**request)
+    def create(self, validated_data):
+        password = validated_data.pop('password', None)
+        user = Author(**validated_data)
         user.set_password(password)
         user.save()
+        print(user)
         return user
 
 
