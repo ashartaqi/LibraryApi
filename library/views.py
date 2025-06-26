@@ -19,18 +19,17 @@ class AuthorSearch(RetrieveAPIView):
     def get(self, request, pk):
         author = self.get_queryset().filter(username=pk).first()
         if author:
-            serialzer = self.get_serializer(author)
-            serialzer.data
-            return Response(serialzer.data, status=status.HTTP_200_OK)
+            serializer = self.get_serializer(author)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class BookViewSet(viewsets.ModelViewSet):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    # permission_classes = [permissions.IsAuthenticatedOrReadOnly,]
+    permission_classes = [permissions.IsAuthenticated,]
+    search_fields = ['title']
+    filterset_fields = ['title']
 
-    def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
-  
+
   

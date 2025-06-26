@@ -1,4 +1,6 @@
 from rest_framework import serializers
+from rest_framework.authtoken.models import Token
+
 from library.models import Author, Book
 
 
@@ -23,6 +25,20 @@ class AuthorSerializer(serializers.ModelSerializer):
 
 
 class BookSerializer(serializers.ModelSerializer):
+    author = serializers.CharField(read_only=True)
+
     class Meta:
         model = Book
         fields = ['id', 'title', 'author', 'publication_date', 'is_borrowed']
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        token = Token.objects.get(user=request.user)
+        if token:
+            author_name = request.user.username
+            author = Author.objects.get(username=author_name)
+            book = Book.objects.create(author=author, **validated_data)
+            return book
+
+        return serializers.ValidationError({"error": "invalid token"})
+
