@@ -8,13 +8,13 @@ class AuthorSerializer(serializers.ModelSerializer):
     books = serializers.PrimaryKeyRelatedField(many=True, read_only=True, source='book_set')
     class Meta:
         model = Author
-        fields = ['id' ,'first_name' ,'last_name' ,'username', 'email', 'password', 'biography' ,'books']
+        fields = ['id', 'first_name', 'last_name', 'username', 'email', 'password', 'biography', 'books']
 
         extra_kwargs = {
             'password': {'write_only': True},
             'email': {'write_only': True},
         }
-    
+
     def create(self, validated_data):
         password = validated_data.pop('password', None)
         user = Author(**validated_data)
@@ -29,16 +29,18 @@ class BookSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Book
-        fields = ['id', 'title', 'author', 'publication_date', 'is_borrowed']
+        fields = ['id', 'title', 'author', 'description', 'content', 'publication_date', 'is_borrowed']
 
     def create(self, validated_data):
         request = self.context.get('request')
         token = Token.objects.get(user=request.user)
         if token:
-            author_name = request.user.username
-            author = Author.objects.get(username=author_name)
-            book = Book.objects.create(author=author, **validated_data)
-            return book
+            try:
+                author_name = request.user.username
+                author = Author.objects.get(username=author_name)
+                book = Book.objects.create(author=author, **validated_data)
+                return book
+            except:
+                raise serializers.ValidationError({"error": "title and description are required"})
 
-        return serializers.ValidationError({"error": "invalid token"})
-
+        raise serializers.ValidationError({"error": "invalid token"})

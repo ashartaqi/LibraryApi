@@ -33,7 +33,6 @@ ALLOWED_HOSTS = []
 # Custom settings
 
 AUTH_USER_MODEL = 'library.Author'
-APPEND_SLASH = False
 
 
 # DRF settings
