@@ -27,6 +27,22 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# super user:
+# username = ashar, password = 1234
+
+# Custom settings
+
+AUTH_USER_MODEL = 'library.Author'
+
+
+# DRF settings
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',  # For token-based
+        'rest_framework.authentication.SessionAuthentication',  # For browsable API login
+    ],
+}
+
 
 # Application definition
 
@@ -37,6 +53,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'library'
 ]
 
 MIDDLEWARE = [
